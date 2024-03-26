@@ -7,6 +7,7 @@ import StatusCodes from "http-status-codes";
 
 import { router as apiRouter } from "./api.js";
 
+const { BAD_REQUEST, UNAUTHORIZED } = StatusCodes;
 const port = process.env.SERVER_PORT || 4000;
 const host = process.env.SERVER_HOST || "localhost";
 const app = express();
@@ -18,8 +19,7 @@ app.use(cookieParser());
 
 // error handling
 app.use((err, _req, res, _next) => {
-  const status =
-    err instanceof HttpError ? err.HttpStatus : StatusCodes.BAD_REQUEST;
+  const status = err instanceof HttpError ? err.HttpStatus : BAD_REQUEST;
   return res.status(status).json({
     error: err?.message,
   });
@@ -32,7 +32,7 @@ app.use((req, res, next) => {
     req.auth = { tenant, subject };
     next();
   } else {
-    res.status(StatusCodes.UNAUTHORIZED).json({
+    res.status(UNAUTHORIZED).json({
       error: "authentication error: user credentials not provided",
     });
   }
