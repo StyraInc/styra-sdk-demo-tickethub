@@ -25,7 +25,7 @@
           "code": 105
         }
       ],
-      "no-console": 1,
+      "no-console": 0,
       "no-extra-boolean-cast": 0
     }
   },
@@ -39,7 +39,8 @@
     "http-status-codes": "^2.2.0",
     "jsonfile": "^6.1.0",
     "module-alias": "^2.2.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "opa": "github:StyraInc/opa-typescript"
   },
   "devDependencies": {
     "eslint": "^8.57.0",

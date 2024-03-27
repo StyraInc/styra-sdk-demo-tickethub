@@ -6,8 +6,9 @@ import express from "express";
 import StatusCodes from "http-status-codes";
 
 import { router as apiRouter } from "./api.js";
+import { UnauthorizedError } from "./authz.js";
 
-const { BAD_REQUEST, UNAUTHORIZED } = StatusCodes;
+const { BAD_REQUEST, UNAUTHORIZED, FORBIDDEN } = StatusCodes;
 const port = process.env.SERVER_PORT || 4000;
 const host = process.env.SERVER_HOST || "localhost";
 const app = express();
@@ -16,14 +17,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-// error handling
-app.use((err, _req, res, _next) => {
-  const status = err instanceof HttpError ? err.HttpStatus : BAD_REQUEST;
-  return res.status(status).json({
-    error: err?.message,
-  });
-});
 
 // authentication
 app.use((req, res, next) => {
@@ -40,6 +33,20 @@ app.use((req, res, next) => {
 
 // API
 app.use("/api", apiRouter);
+
+// error handling
+app.use((err, _req, res, _next) => {
+  if (err instanceof UnauthorizedError) {
+    return res.status(FORBIDDEN).json({
+      status: "forbidden",
+      message: err.message,
+    }); // TODO(sr): do we actually get this response JSON back?
+  }
+  const status = err instanceof HttpError ? err.HttpStatus : BAD_REQUEST;
+  return res.status(status).json({
+    error: err.message,
+  });
+});
 
 app.listen(port, host, () => {
   console.info(`Server started on port: ${port}`);
