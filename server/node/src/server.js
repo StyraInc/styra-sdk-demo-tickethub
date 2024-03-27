@@ -8,7 +8,7 @@ import StatusCodes from "http-status-codes";
 import { router as apiRouter } from "./api.js";
 import { UnauthorizedError } from "./authz.js";
 
-const { BAD_REQUEST, UNAUTHORIZED, FORBIDDEN } = StatusCodes;
+const { INTERNAL_SERVER_ERROR, UNAUTHORIZED, FORBIDDEN } = StatusCodes;
 const port = process.env.SERVER_PORT || 4000;
 const host = process.env.SERVER_HOST || "localhost";
 const app = express();
@@ -42,8 +42,8 @@ app.use((err, _req, res, _next) => {
       message: err.message,
     }); // TODO(sr): do we actually get this response JSON back?
   }
-  const status = err instanceof HttpError ? err.HttpStatus : BAD_REQUEST;
-  return res.status(status).json({
+  console.error(err);
+  return res.status(INTERNAL_SERVER_ERROR).json({
     error: err.message,
   });
 });
